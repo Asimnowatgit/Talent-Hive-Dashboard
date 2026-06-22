@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talent Hive Analysis - Executive Dashboard</title>
+  <style>
+    :root{
+      --bg:#f5f1ec;
+      --panel:#fcfaf7;
+      --card:#ffffff;
+      --ink:#25211f;
+      --text:#5f5a56;
+      --muted:#8d857d;
+      --line:#e7ddd4;
+      --soft:#f3ede7;
+      --orange:#fd5108;
+      --orange-2:#f7ad7d;
+      --orange-3:#ffd7c2;
+      --orange-4:#fff4ec;
+      --green:#3b7f5e;
+      --shadow:0 16px 34px rgba(36,29,24,.06);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,#eee8e1 0%, #f5f1ec 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .topbar-wrap{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      width:100%;
+      background:rgba(251,248,245,.96);
+      backdrop-filter:blur(6px);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 8px 20px rgba(36,29,24,.04);
+    }
+
+    .topbar-inner{
+      width:calc(100% - 2in);
+      margin:0 auto;
+      padding:18px 0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:var(--orange);
+      flex:0 0 auto;
+    }
+
+    .brand-copy{min-width:0}
+
+    .kicker{
+      font-size:11px;
+      line-height:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:var(--orange);
+      margin-bottom:6px;
+    }
+
+    .brand-title{
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:26px;
+      line-height:30px;
+      color:var(--ink);
+      font-weight:700;
+      letter-spacing:-.02em;
+    }
+
+    .nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-end;
+    }
+
+    .nav a{
+      text-decoration:none;
+      color:#6a645e;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:12px;
+      line-height:12px;
+      font-weight:700;
+    }
+
+    .page{
+      width:calc(100% - 2in);
+      max-width:none;
+      margin:24px auto;
+    }
+
+    .shell{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+    }
+
+    .hero{
+      padding:34px 28px 28px;
+      border-bottom:1px solid var(--line);
+      background:
+        radial-gradient(circle at 92% 8%, rgba(253,81,8,.08) 0 12%, transparent 12%),
+        linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,0));
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.35fr .85fr;
+      gap:24px;
+      align-items:start;
+    }
+
+    .hero h1{
+      margin:0 0 14px;
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:46px;
+      line-height:1.03;
+      letter-spacing:-.04em;
+      color:var(--ink);
+    }
+
+    .hero p{
+      margin:0 0 14px;
+      font-size:14px;
+      line-height:1.55;
+      color:var(--text);
+      max-width:760px;
+    }
+
+    .hero-note{
+      margin-top:14px;
+      padding:14px 16px;
+      background:var(--soft);
+      border-left:3px solid var(--orange);
+      font-size:13px;
+      line-height:1.55;
+      color:#645d56;
+      border-radius:0 14px 14px 0;
+    }
+
+    .hero-side{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero-side h3{
+      margin:0 0 14px;
+      color:var(--ink);
+      font-size:14px;
+      line-height:18px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .pulse-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .pulse{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background:#fffdfb;
+    }
+
+    .pulse-badge{
+      min-width:54px;
+      padding:8px 10px;
+      text-align:center;
+      background:var(--orange-4);
+      border-radius:12px;
+      color:var(--orange);
+      font-size:12px;
+      line-height:12px;
+      font-weight:700;
+    }
+
+    .pulse strong{
+      display:block;
+      font-size:13px;
+      line-height:18px;
+      color:var(--ink);
+      margin-bottom:3px;
+    }
+
+    .pulse span{
+      display:block;
+      font-size:12px;
+      line-height:17px;
+      color:#736c66;
+    }
+
+    .section{
+      padding:30px 28px 34px;
+      border-bottom:1px solid var(--line);
+      scroll-margin-top:120px;
+    }
+
+    .section:last-child{border-bottom:none}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:20px;
+      margin-bottom:22px;
+    }
+
+    .section-label{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:var(--orange);
+      font-size:11px;
+      line-height:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      margin-bottom:12px;
+    }
+
+    .section-label:before{
+      content:"";
+      width:36px;
+      height:2px;
+      background:var(--orange);
+      border-radius:2px;
+      display:block;
+    }
+
+    .section h2{
+      margin:0;
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:34px;
+      line-height:1.08;
+      letter-spacing:-.03em;
+      color:var(--ink);
+    }
+
+    .section-sub{
+      max-width:760px;
+      font-size:15px;
+      line-height:1.58;
+      color:var(--text);
+      margin-top:10px;
+    }
+
+    .method{
+      max-width:320px;
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 14px;
+      font-size:12px;
+      line-height:1.5;
+      color:#726a63;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(5, 1fr);
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .stat-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px 16px;
+      box-shadow:var(--shadow);
+      min-height:120px;
+    }
+
+    .stat-card .label{
+      color:#7c756e;
+      font-size:11px;
+      line-height:14px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:10px;
+    }
+
+    .stat-card .value{
+      font-family:Georgia, "Times New Roman", serif;
+      color:var(--ink);
+      font-size:32px;
+      line-height:1.05;
+      letter-spacing:-.03em;
+      margin-bottom:10px;
+    }
+
+    .stat-card .delta{
+      font-size:13px;
+      line-height:18px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .down{color:#a05f57}
+    .up{color:var(--green)}
+    .flat{color:#6f6a64}
+
+    .stat-card .meta{
+      font-size:12px;
+      line-height:17px;
+      color:#7b746c;
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .card h3{
+      margin:0 0 16px;
+      color:var(--ink);
+      font-size:18px;
+      line-height:24px;
+      font-weight:700;
+    }
+
+    .table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    .table th{
+      text-align:left;
+      padding:10px 8px;
+      font-size:12px;
+      line-height:16px;
+      color:#7b746c;
+      border-bottom:1px solid var(--line);
+      font-weight:700;
+    }
+
+    .table td{
+      padding:11px 8px;
+      font-size:13px;
+      line-height:18px;
+      color:#5f5a56;
+      border-bottom:1px solid #f0e8e0;
+      vertical-align:top;
+    }
+
+    .table tr:last-child td{border-bottom:none}
+    .table td strong{color:var(--ink)}
+
+    .mini-metrics{
+      display:grid;
+      gap:12px;
+    }
+
+    .mini-metric{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:#fffdfb;
+    }
+
+    .mini-metric .label{
+      font-size:11px;
+      line-height:14px;
+      color:#7c756e;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+
+    .mini-metric .value{
+      color:var(--ink);
+      font-size:28px;
+      line-height:1.1;
+      font-family:Georgia, "Times New Roman", serif;
+      margin-bottom:6px;
+    }
+
+    .mini-metric .meta{
+      font-size:12px;
+      line-height:17px;
+      color:#756d66;
+    }
+
+    .benchmark-grid{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .benchmark-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px 16px;
+      min-height:128px;
+      box-shadow:var(--shadow);
+    }
+
+    .benchmark-card .label{
+      font-size:11px;
+      line-height:14px;
+      color:#7c756e;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .benchmark-card .value{
+      font-family:Georgia, "Times New Roman", serif;
+      color:var(--ink);
+      font-size:30px;
+      line-height:1.06;
+      margin-bottom:10px;
+    }
+
+    .benchmark-card .desc{
+      font-size:12px;
+      line-height:18px;
+      color:#756d66;
+    }
+
+    .callout{
+      margin-top:16px;
+      background:var(--orange-4);
+      border:1px solid var(--orange-3);
+      border-radius:18px;
+      padding:16px 18px;
+      color:#5c544d;
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .proof-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+
+    .chart-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 16px;
+      box-shadow:var(--shadow);
+    }
+
+    .chart-title{
+      color:var(--ink);
+      font-size:16px;
+      line-height:20px;
+      font-weight:700;
+      margin-bottom:16px;
+    }
+
+    .bar-table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    .bar-table td{
+      padding:7px 0;
+      vertical-align:middle;
+      font-size:12px;
+      line-height:16px;
+    }
+
+    .bar-label{
+      width:110px;
+      color:#67605a;
+      padding-right:10px;
+      white-space:nowrap;
+    }
+
+    .bar-value{
+      width:50px;
+      text-align:right;
+      color:#554e49;
+      font-weight:700;
+      padding-left:10px;
+      white-space:nowrap;
+    }
+
+    .bar-track{
+      height:14px;
+      background:#eee8e2;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .bar-fill{
+      height:100%;
+      background:var(--orange-2);
+      border-radius:999px;
+    }
+
+    .bar-fill.strong{background:var(--orange)}
+
+    .firm{
+      font-weight:700;
+      color:var(--ink);
+    }
+
+    .firm-val{color:var(--orange)}
+
+    .los-table-wrap{overflow:auto}
+
+    .note-list{
+      display:grid;
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .note-item{
+      background:#fffdfb;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .note-item strong{
+      display:block;
+      color:var(--ink);
+      font-size:14px;
+      line-height:18px;
+      margin-bottom:4px;
+    }
+
+    .note-item span{
+      font-size:13px;
+      line-height:19px;
+      color:#726a63;
+    }
+
+    .ai-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .pillars{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .pillar{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .pillar strong{
+      display:block;
+      color:var(--ink);
+      font-size:15px;
+      line-height:20px;
+      margin-bottom:6px;
+    }
+
+    .pillar span{
+      font-size:13px;
+      line-height:19px;
+      color:#736b64;
+    }
+
+    .footer{
+      padding:20px 28px 24px;
+      color:#8a827b;
+      font-size:12px;
+      line-height:18px;
+      border-top:1px solid var(--line);
+      background:#fbf8f5;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+    }
+
+    @media (max-width: 1100px){
+      .topbar-inner,
+      .page{
+        width:calc(100% - 48px);
+      }
+      .stats-grid,
+      .benchmark-grid,
+      .ai-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+      .hero-grid,
+      .split,
+      .proof-grid,
+      .pillars{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 720px){
+      .topbar-inner,
+      .page{
+        width:calc(100% - 24px);
+      }
+      .topbar-inner{
+        padding:14px 0;
+      }
+      .nav{justify-content:flex-start}
+      .hero,
+      .section,
+      .footer{
+        padding-left:18px;
+        padding-right:18px;
+      }
+      .hero h1{font-size:34px}
+      .section h2{font-size:28px}
+      .stats-grid,
+      .benchmark-grid,
+      .ai-grid{
+        grid-template-columns:1fr;
+      }
+      .section-head{display:block}
+      .method{margin-top:14px; max-width:none}
+      .footer{flex-direction:column; align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar-wrap">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="dot"></span>
+        <div class="brand-copy">
+          <div class="kicker">Executive Dashboard</div>
+          <div class="brand-title">Talent Hive Analysis</div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <a href="#overview">Overview</a>
+        <a href="#comparison">FY25 vs FY26</a>
+        <a href="#quality">Quality Benchmarks</a>
+        <a href="#los">LoS Analysis</a>
+        <a href="#ai">AI Sentiments</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="shell">
+
+      <section class="hero" id="overview">
+        <div class="hero-grid">
+          <div>
+            <div class="kicker">Talent Hive Analysis</div>
+            <h1>Executive analysis of FY26 Talent Hive activity, feedback quality, completion performance, and downstream AI insight generation.</h1>
+            <p>
+              Updated FY26 view across request demand, completion performance, quality benchmarks, line-of-service differences, and AI-enabled value creation.
+            </p>
+            <div class="hero-note">
+              <strong>Methodology note:</strong> FY25 is full year. FY26 volume metrics are year to date with one month remaining. FY26 quality metrics reflect the FY26 quality dataset. Quality benchmark analysis is based on data available from <strong>Jan '26 onward</strong>. ETIC and Strategy&amp; are excluded from Line of Service quality views.
+            </div>
+          </div>
+
+          <div class="hero-side">
+            <h3>Executive pulse</h3>
+            <div class="pulse-list">
+              <div class="pulse">
+                <div class="pulse-badge">14</div>
+                <div>
+                  <strong>Demand stable</strong>
+                  <span>Average requests per staff remained flat year over year.</span>
+                </div>
+              </div>
+              <div class="pulse">
+                <div class="pulse-badge">9.52m</div>
+                <div>
+                  <strong>Effort manageable</strong>
+                  <span>Firm average time to complete remained practical at scale.</span>
+                </div>
+              </div>
+              <div class="pulse">
+                <div class="pulse-badge">439</div>
+                <div>
+                  <strong>Quality uplift</strong>
+                  <span>Average written context far exceeded the 180-character threshold.</span>
+                </div>
+              </div>
+              <div class="pulse">
+                <div class="pulse-badge">86.8%</div>
+                <div>
+                  <strong>AI approval story</strong>
+                  <span>Early user sentiment toward the AI layer is strongly positive.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="comparison">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Section A / FY25 vs FY26 Comparison</div>
+            <h2>Demand remained resilient. Completion became the pressure point.</h2>
+            <div class="section-sub">
+              Direct comparison is limited to request and completion metrics available in both periods. Completion percentage is calculated as total completed divided by total requested.
+            </div>
+          </div>
+          <div class="method">
+            FY25 is full year. FY26 volume metrics are year to date with one month remaining. Headcount context is included to interpret request volume movement.
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="label">Total Requested</div>
+            <div class="value">120.1k → 113.4k</div>
+            <div class="delta down">-5.6% year over year</div>
+            <div class="meta">FY26 total requests are 94.4% of FY25.</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="label">Total Completed</div>
+            <div class="value">88.0k → 74.9k</div>
+            <div class="delta down">-14.9% year over year</div>
+            <div class="meta">FY26 total completions are 85.1% of FY25.</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="label">Completion %</div>
+            <div class="value">73.3% → 66.0%</div>
+            <div class="delta down">Down 7.3 percentage points</div>
+            <div class="meta">The clearest operational pressure point.</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="label">Avg Requested / Staff</div>
+            <div class="value">14 → 14</div>
+            <div class="delta flat">Stable demand per person</div>
+            <div class="meta">Signal that appetite to request feedback held up.</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="label">Avg Completed / Staff</div>
+            <div class="value">11 → 9</div>
+            <div class="delta down">Lower follow-through per person</div>
+            <div class="meta">Completion, not demand, is the main challenge.</div>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h3>Metric comparison table</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>FY25</th>
+                  <th>FY26</th>
+                  <th>Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Total Feedback Requested</strong></td>
+                  <td>120.1k</td>
+                  <td>113.4k</td>
+                  <td>-5.6%</td>
+                </tr>
+                <tr>
+                  <td><strong>Total Feedback Completed</strong></td>
+                  <td>88.0k</td>
+                  <td>74.9k</td>
+                  <td>-14.9%</td>
+                </tr>
+                <tr>
+                  <td><strong>Completion %</strong></td>
+                  <td>73.3%</td>
+                  <td>66.0%</td>
+                  <td>-7.3 pts</td>
+                </tr>
+                <tr>
+                  <td><strong>Average # Requested per Staff</strong></td>
+                  <td>14</td>
+                  <td>14</td>
+                  <td>Flat</td>
+                </tr>
+                <tr>
+                  <td><strong>Average # Completed per Staff</strong></td>
+                  <td>11</td>
+                  <td>9</td>
+                  <td>-18.2%</td>
+                </tr>
+                <tr>
+                  <td><strong>Headcount (May)</strong></td>
+                  <td>8,592</td>
+                  <td>8,091</td>
+                  <td>-5.8%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3>Executive readout</h3>
+            <div class="mini-metrics">
+              <div class="mini-metric">
+                <div class="label">Demand stable</div>
+                <div class="value">14</div>
+                <div class="meta">Requests per staff stayed flat, suggesting demand remained resilient.</div>
+              </div>
+
+              <div class="mini-metric">
+                <div class="label">Headcount context</div>
+                <div class="value">8,592 → 8,091</div>
+                <div class="meta">The drop in total requests broadly tracks the decline in headcount.</div>
+              </div>
+
+              <div class="mini-metric">
+                <div class="label">Main pressure point</div>
+                <div class="value">66.0%</div>
+                <div class="meta">Completion rate fell from 73.3%, making follow-through the main operational challenge.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="quality">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Section B / FY26 Quality Benchmark Metrics</div>
+            <h2>Quality improved at source, without creating disproportionate effort.</h2>
+            <div class="section-sub">
+              FY26 introduced quality-focused features, including a minimum context threshold and time-to-complete visibility. These metrics are not directly comparable to FY25, but they establish the benchmark for the quality of feedback now being captured and used downstream.
+            </div>
+          </div>
+          <div class="method">
+            Quality benchmark analysis reflects data available from <strong>Jan '26 onward</strong>. Firm average time to complete is based on <strong>571 seconds</strong> per record.
+          </div>
+        </div>
+
+        <div class="benchmark-grid">
+          <div class="benchmark-card">
+            <div class="label">Minimum Context Threshold</div>
+            <div class="value">180 chars</div>
+            <div class="desc">New written-context requirement introduced in FY26.</div>
+          </div>
+
+          <div class="benchmark-card">
+            <div class="label">Firm Avg Time to Complete</div>
+            <div class="value">9.52 min</div>
+            <div class="desc">571 seconds on average across the analyzed FY26 quality dataset.</div>
+          </div>
+
+          <div class="benchmark-card">
+            <div class="label">Avg Context Length</div>
+            <div class="value">386-502</div>
+            <div class="desc">Characters across included lines of service.</div>
+          </div>
+
+          <div class="benchmark-card">
+            <div class="label">Avg Context Length</div>
+            <div class="value">65-86</div>
+            <div class="desc">Words across included lines of service.</div>
+          </div>
+        </div>
+
+        <div class="proof-grid">
+          <div class="chart-card">
+            <div class="chart-title">Average Time to Complete Feedback (Minutes)</div>
+            <table class="bar-table">
+              <tr>
+                <td class="bar-label">Assurance</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:69%;"></div></div></td>
+                <td class="bar-value">9.12</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Consulting</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:72%;"></div></div></td>
+                <td class="bar-value">9.45</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Deals</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div></td>
+                <td class="bar-value">13.13</td>
+              </tr>
+              <tr>
+                <td class="bar-label">IFS</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:84%;"></div></div></td>
+                <td class="bar-value">11.00</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Tax</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:61%;"></div></div></td>
+                <td class="bar-value">8.00</td>
+              </tr>
+              <tr>
+                <td class="bar-label firm">Firm Avg</td>
+                <td><div class="bar-track"><div class="bar-fill strong" style="width:73%;"></div></div></td>
+                <td class="bar-value firm-val">9.52</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">Average Context Length (Characters)</div>
+            <table class="bar-table">
+              <tr>
+                <td class="bar-label">Assurance</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div></td>
+                <td class="bar-value">502</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Consulting</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:92.6%;"></div></div></td>
+                <td class="bar-value">465</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Deals</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:89.2%;"></div></div></td>
+                <td class="bar-value">448</td>
+              </tr>
+              <tr>
+                <td class="bar-label">IFS</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:78.9%;"></div></div></td>
+                <td class="bar-value">396</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Tax</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:76.9%;"></div></div></td>
+                <td class="bar-value">386</td>
+              </tr>
+              <tr>
+                <td class="bar-label firm">Firm Avg</td>
+                <td><div class="bar-track"><div class="bar-fill strong" style="width:87.5%;"></div></div></td>
+                <td class="bar-value firm-val">439</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="callout">
+          There was concern that requiring more written context might create friction. Instead, users wrote substantially more than the minimum, with average context length reaching <strong>439 characters firmwide</strong> while average completion time remained manageable at <strong>9.52 minutes</strong>. Better feedback quality created the level of detail needed for meaningful downstream analysis and AI insight generation.
+        </div>
+
+        <div class="note-list">
+          <div class="note-item">
+            <strong>Quality improved at source</strong>
+            <span>The 180-character threshold increased the depth and consistency of written comments.</span>
+          </div>
+          <div class="note-item">
+            <strong>Users exceeded expectations</strong>
+            <span>Average context length ranged from 386 to 502 characters, well above the minimum threshold.</span>
+          </div>
+          <div class="note-item">
+            <strong>Effort remained manageable</strong>
+            <span>The firm average time to complete was 9.52 minutes, remaining practical at scale.</span>
+          </div>
+          <div class="note-item">
+            <strong>Better data enabled better AI</strong>
+            <span>Richer comments created the input quality required for AI to identify patterns, themes, and insights.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="los">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Section C / FY26 Line of Service Analysis</div>
+            <h2>Different LoS appear to operate different, but effective, feedback models.</h2>
+            <div class="section-sub">
+              Analysis excludes ETIC and Strategy&amp; and focuses on context length, request and completion averages, and average time in minutes.
+            </div>
+          </div>
+          <div class="method">
+            Records analyzed reflect the quality benchmark dataset available from <strong>Jan '26 onward</strong>.
+          </div>
+        </div>
+
+        <div class="card los-table-wrap">
+          <h3>Line of Service comparison</h3>
+          <table class="table" style="min-width:920px;">
+            <thead>
+              <tr>
+                <th>Line of Service</th>
+                <th>Avg Context Length (Chars)</th>
+                <th>Avg Context Length (Words)</th>
+                <th>Avg Requested</th>
+                <th>Avg Completed</th>
+                <th>Avg Time (Minutes)</th>
+                <th>Records Analyzed*</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Assurance</strong></td>
+                <td>502</td>
+                <td>86</td>
+                <td>14</td>
+                <td>8</td>
+                <td>9.12</td>
+                <td>From Jan '26 onward</td>
+              </tr>
+              <tr>
+                <td><strong>Consulting</strong></td>
+                <td>465</td>
+                <td>78</td>
+                <td>14</td>
+                <td>10</td>
+                <td>9.45</td>
+                <td>From Jan '26 onward</td>
+              </tr>
+              <tr>
+                <td><strong>Deals</strong></td>
+                <td>448</td>
+                <td>77</td>
+                <td>7</td>
+                <td>4</td>
+                <td>13.13</td>
+                <td>From Jan '26 onward</td>
+              </tr>
+              <tr>
+                <td><strong>Internal Firm Services</strong></td>
+                <td>396</td>
+                <td>67</td>
+                <td>14</td>
+                <td>8</td>
+                <td>11.00</td>
+                <td>From Jan '26 onward</td>
+              </tr>
+              <tr>
+                <td><strong>Tax</strong></td>
+                <td>386</td>
+                <td>65</td>
+                <td>16</td>
+                <td>10</td>
+                <td>8.00</td>
+                <td>From Jan '26 onward</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h3>LoS readout</h3>
+            <div class="note-list" style="margin-top:0;">
+              <div class="note-item">
+                <strong>Assurance</strong>
+                <span>Leads on written depth with the longest average context length.</span>
+              </div>
+              <div class="note-item">
+                <strong>Consulting</strong>
+                <span>Balances strong written depth with a completion time close to the firm average.</span>
+              </div>
+              <div class="note-item">
+                <strong>Deals</strong>
+                <span>Requires the most time per entry at 13.13 minutes.</span>
+              </div>
+              <div class="note-item">
+                <strong>Tax</strong>
+                <span>Most concise on written context and fastest on average time among included LoS.</span>
+              </div>
+              <div class="note-item">
+                <strong>Firm benchmark</strong>
+                <span>The firm average time to complete is 9.52 minutes across the analyzed FY26 quality dataset.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Top 5 human skills selected</h3>
+            <table class="bar-table">
+              <tr>
+                <td class="bar-label">Teamwork</td>
+                <td><div class="bar-track"><div class="bar-fill strong" style="width:100%;"></div></div></td>
+                <td class="bar-value">32.3k</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Exemplary Leadership</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:29.4%;"></div></div></td>
+                <td class="bar-value">9.5k</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Communication</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:15.8%;"></div></div></td>
+                <td class="bar-value">5.1k</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Analytical Thinking</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:9.0%;"></div></div></td>
+                <td class="bar-value">2.9k</td>
+              </tr>
+              <tr>
+                <td class="bar-label">Intellectual Curiosity</td>
+                <td><div class="bar-track"><div class="bar-fill" style="width:8.0%;"></div></div></td>
+                <td class="bar-value">2.6k</td>
+              </tr>
+            </table>
+            <div class="callout" style="margin-top:16px;">
+              Structured developmental feedback is now surfacing clearer capability themes firmwide. <strong>Teamwork</strong> is the dominant human-skill signal, followed by <strong>Exemplary Leadership</strong> and <strong>Communication</strong>.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="ai">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Section D / AI Sentiments Dashboard Impact</div>
+            <h2>Better feedback quality enabled better AI insight generation.</h2>
+            <div class="section-sub">
+              The success of the AI layer is directly linked to the improved quality of Talent Hive comments.
+            </div>
+          </div>
+          <div class="method">
+            Early user response since AI Sentiments Dashboard launch on <strong>6 May</strong>.
+          </div>
+        </div>
+
+        <div class="ai-grid">
+          <div class="benchmark-card">
+            <div class="label">Launch Date</div>
+            <div class="value">6 May</div>
+            <div class="desc">FY26 rollout of the AI Sentiments Dashboard.</div>
+          </div>
+
+          <div class="benchmark-card">
+            <div class="label">Total User Feedback</div>
+            <div class="value">68</div>
+            <div class="desc">Post-launch user feedback collected.</div>
+          </div>
+
+          <div class="benchmark-card">
+            <div class="label">Approvals</div>
+            <div class="value">59</div>
+            <div class="desc">Positive user responses.</div>
+          </div>
+
+          <div class="benchmark-card">
+            <div class="label">Approval Rate</div>
+            <div class="value">86.8%</div>
+            <div class="desc">Strong early satisfaction story.</div>
+          </div>
+        </div>
+
+        <div class="callout">
+          Without richer written comments, the AI dashboard would not have been able to identify meaningful patterns, themes, and insights. In FY26, better input quality made the AI layer possible, and early user feedback suggests the output is already creating practical value.
+        </div>
+
+        <div class="pillars">
+          <div class="pillar">
+            <strong>Why feedback quality matters for AI</strong>
+            <span>
+              The AI Sentiments Dashboard works because the underlying feedback is detailed enough to analyze. The 180-character threshold led users to provide substantially richer written comments than expected.
+            </span>
+          </div>
+
+          <div class="pillar">
+            <strong>Adoption and satisfaction story</strong>
+            <span>
+              Since launch, the AI dashboard has received 68 pieces of user feedback, including 59 approvals, resulting in an 86.8% approval rate, a strong early signal of usefulness and satisfaction.
+            </span>
+          </div>
+
+          <div class="pillar">
+            <strong>Users are responding well</strong>
+            <span>
+              Early feedback indicates strong satisfaction among CRTs, career coaches, and other users. This reinforces that the investment in better-quality written feedback is already generating downstream value.
+            </span>
+          </div>
+
+          <div class="pillar">
+            <strong>AI outputs became possible</strong>
+            <span>
+              The dashboard can now convert qualitative feedback into themes, patterns, and actionable insights used in the broader review and talent process.
+            </span>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:18px;">
+          <strong>Key takeaway:</strong> FY26 Talent Hive enhancements improved the quality of feedback without reducing request demand. Users consistently provided substantially more written context than required, creating the foundation needed for the AI Sentiments Dashboard to generate meaningful insights. The main challenge remains completion, but the design changes have already created measurable value for CRTs, career coaches, and related talent stakeholders.
+        </div>
+      </section>
+
+      <div class="footer">
+        <div>Talent Hive dashboard 2026</div>
+        <div>Talent and Performance COE, OneHC</div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
